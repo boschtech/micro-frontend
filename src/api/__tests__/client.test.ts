@@ -12,7 +12,7 @@ describe("apiFetch", () => {
       ok: true,
       status: 200,
       json: async () => data,
-    } as Response);
+    } as unknown as Response);
 
     const result = await apiFetch("/api/test");
     expect(result).toEqual(data);
@@ -24,7 +24,7 @@ describe("apiFetch", () => {
       status: 404,
       statusText: "Not Found",
       text: async () => "Not found",
-    } as Response);
+    } as unknown as Response);
 
     await expect(apiFetch("/api/test")).rejects.toThrow(ApiError);
   });
@@ -35,7 +35,7 @@ describe("apiFetch", () => {
       status: 500,
       statusText: "Internal Server Error",
       text: async () => "",
-    } as Response);
+    } as unknown as Response);
 
     await expect(apiFetch("/api/test")).rejects.toThrow("Internal Server Error");
   });
@@ -46,7 +46,7 @@ describe("apiFetch", () => {
       status: 502,
       statusText: "Bad Gateway",
       text: async () => { throw new Error("stream error"); },
-    } as Response);
+    } as unknown as Response);
 
     await expect(apiFetch("/api/test")).rejects.toThrow("Bad Gateway");
   });
@@ -55,7 +55,7 @@ describe("apiFetch", () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
       ok: true,
       status: 204,
-    } as Response);
+    } as unknown as Response);
 
     const result = await apiFetch("/api/test");
     expect(result).toBeUndefined();
@@ -80,7 +80,7 @@ describe("apiFetch", () => {
       ok: true,
       status: 200,
       json: async () => ({}),
-    } as Response);
+    } as unknown as Response);
 
     await apiFetch("/api/test", { method: "POST", body: '{"a":1}' });
 
