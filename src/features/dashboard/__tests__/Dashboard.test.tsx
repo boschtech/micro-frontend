@@ -163,9 +163,9 @@ describe("Dashboard", () => {
     renderWithProviders(<Dashboard />);
 
     await waitFor(() => {
-      expect(screen.getByText("localhost:8080")).toBeInTheDocument();
+      expect(screen.getByText("https://product-service-ua20.onrender.com/")).toBeInTheDocument();
     });
-    expect(screen.getByText("localhost:8081")).toBeInTheDocument();
+    expect(screen.getByText("https://order-service-7342.onrender.com/")).toBeInTheDocument();
   });
 
   it("shows DOWN when health response has no status field", async () => {

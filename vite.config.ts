@@ -14,11 +14,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api/products": {
-        target: "http://localhost:8080",
+        target: "https://product-service-ua20.onrender.com/",
         changeOrigin: true,
       },
       "/api/orders": {
-        target: "http://localhost:8081",
+        target: "https://order-service-7342.onrender.com/",
         changeOrigin: true,
       },
     },
