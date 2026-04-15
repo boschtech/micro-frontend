@@ -23,14 +23,14 @@ export function Dashboard() {
   const services = [
     {
       name: "Product Service",
-      port: 8080,
+      url: "https://product-service-ua20.onrender.com/",
       status: productHealth.data?.status,
       loading: productHealth.isLoading,
       error: productHealth.isError,
     },
     {
       name: "Order Service",
-      port: 8081,
+      url: "https://order-service-7342.onrender.com/",
       status: orderHealth.data?.status,
       loading: orderHealth.isLoading,
       error: orderHealth.isError,
@@ -79,7 +79,7 @@ export function Dashboard() {
             >
               <div>
                 <p className="font-medium">{svc.name}</p>
-                <p className="text-xs text-gray-400">localhost:{svc.port}</p>
+                <p className="text-xs text-gray-400">{svc.url}</p>
               </div>
               {svc.loading ? (
                 <span className="text-xs text-gray-400">Checking…</span>
