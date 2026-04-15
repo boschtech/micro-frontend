@@ -148,13 +148,8 @@ describe("Product Service Contract", () => {
         builder.jsonBody(PRODUCT_SHAPE);
       })
       .executeTest(async (mockServer) => {
-        const res = await fetch(`${mockServer.url}/api/products/prod-001`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        expect(res.status).toBe(200);
-        const product = await res.json();
+        pointToProvider(mockServer);
+        const product = await productsApi.update("prod-001", body);
         expect(product).toHaveProperty("id");
         expect(product).toHaveProperty("name");
         expect(product).toHaveProperty("price");
