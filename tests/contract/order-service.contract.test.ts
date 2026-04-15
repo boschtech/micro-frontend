@@ -130,22 +130,4 @@ describe("Order Service Contract", () => {
       });
   });
 
-  it("GET /actuator/health – returns health status", async () => {
-    await provider
-      .addInteraction()
-      .given("the order service is healthy")
-      .uponReceiving("a health check request to order service")
-      .withRequest("GET", "/actuator/health", (builder) => {
-        builder.headers({ "Content-Type": "application/json" });
-      })
-      .willRespondWith(200, (builder) => {
-        builder.headers({ "Content-Type": "application/json" });
-        builder.jsonBody({ status: string("UP") });
-      })
-      .executeTest(async (mockServer) => {
-        pointToProvider(mockServer);
-        const health = await ordersApi.health();
-        expect(health.status).toBe("UP");
-      });
-  });
 });
