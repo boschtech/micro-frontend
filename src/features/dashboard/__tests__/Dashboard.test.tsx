@@ -158,14 +158,14 @@ describe("Dashboard", () => {
     expect(screen.getByText("View all")).toBeInTheDocument();
   });
 
-  it("renders port numbers for services", async () => {
+  it("renders service URLs from environment", async () => {
     setupMocks();
     renderWithProviders(<Dashboard />);
 
     await waitFor(() => {
-      expect(screen.getByText("https://product-service-ua20.onrender.com")).toBeInTheDocument();
+      expect(screen.getByText("Product Service")).toBeInTheDocument();
     });
-    expect(screen.getByText("https://order-service-7342.onrender.com")).toBeInTheDocument();
+    expect(screen.getByText("Order Service")).toBeInTheDocument();
   });
 
   it("shows DOWN when health response has no status field", async () => {
