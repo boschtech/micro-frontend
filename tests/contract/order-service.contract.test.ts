@@ -126,7 +126,7 @@ describe("Order Service Contract", () => {
         pointToProvider(mockServer);
         const orders = await ordersApi.getByProductId("prod-001");
         expect(orders).toHaveLength(1);
-        expect(orders[0].productId).toBe("prod-001");
+        expect(orders[0]!.productId).toBe("prod-001");
       });
   });
 

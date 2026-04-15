@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderWithProviders, screen, waitFor, within } from "../test-utils";
 import { App } from "@/App";
-import { setupMockServer, mockOrders } from "./mock-server";
+import { setupMockServer } from "./mock-server";
 
 beforeEach(() => {
   vi.restoreAllMocks();
