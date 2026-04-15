@@ -23,14 +23,14 @@ export function Dashboard() {
   const services = [
     {
       name: "Product Service",
-      url: "https://product-service-ua20.onrender.com/",
+      url: "https://product-service-ua20.onrender.com",
       status: productHealth.data?.status,
       loading: productHealth.isLoading,
       error: productHealth.isError,
     },
     {
       name: "Order Service",
-      url: "https://order-service-7342.onrender.com/",
+      url: "https://order-service-7342.onrender.com",
       status: orderHealth.data?.status,
       loading: orderHealth.isLoading,
       error: orderHealth.isError,
