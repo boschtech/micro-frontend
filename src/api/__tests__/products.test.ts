@@ -1,6 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { productsApi } from "../products";
 
+// Mock the client module to use empty service URLs (relative paths)
+vi.mock("../client", async () => {
+  const actual = await vi.importActual("../client");
+  return {
+    ...actual,
+    serviceUrl: {
+      products: "",
+      orders: "",
+    },
+  };
+});
+
 beforeEach(() => {
   vi.restoreAllMocks();
 });
