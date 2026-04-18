@@ -41,14 +41,6 @@ export function Navbar() {
               </NavLink>
             </li>
           ))}
-          <li>
-            <NavLink
-              to="/orders/new"
-              className="rounded-md bg-bosch-gold px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-bosch-gold-dark"
-            >
-              New Order
-            </NavLink>
-          </li>
         </ul>
       </nav>
     </header>
