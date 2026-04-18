@@ -64,25 +64,30 @@ export function Dashboard() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold">Dashboard</h1>
+      <span className="inline-block rounded-full bg-bosch-gold/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-wide text-bosch-gold">
+        Console
+      </span>
+      <h1 className="mt-3 mb-8 text-4xl font-extrabold tracking-tight text-white">
+        Dashboard
+      </h1>
 
       {/* Service Health */}
-      <section className="mb-8">
-        <h2 className="mb-3 text-lg font-semibold text-gray-700">
+      <section className="mb-10">
+        <h2 className="mb-4 text-lg font-semibold text-white">
           Service Health
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {services.map((svc) => (
             <div
               key={svc.name}
-              className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4"
+              className="flex items-center justify-between rounded-xl border border-bosch-border bg-bosch-surface p-5 transition hover:border-bosch-gold"
             >
               <div>
-                <p className="font-medium">{svc.name}</p>
-                <p className="text-xs text-gray-400">{svc.url}</p>
+                <p className="font-semibold text-white">{svc.name}</p>
+                <p className="text-xs text-bosch-muted">{svc.url}</p>
               </div>
               {svc.loading ? (
-                <span className="text-xs text-gray-400">Checking…</span>
+                <span className="text-xs text-bosch-muted">Checking…</span>
               ) : svc.error ? (
                 <StatusBadge value="DOWN" />
               ) : (
@@ -94,17 +99,19 @@ export function Dashboard() {
       </section>
 
       {/* Stats */}
-      <section className="mb-8">
-        <h2 className="mb-3 text-lg font-semibold text-gray-700">Overview</h2>
+      <section className="mb-10">
+        <h2 className="mb-4 text-lg font-semibold text-white">Overview</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat) => (
             <Link
               key={stat.label}
               to={stat.link}
-              className="rounded-lg border border-gray-200 bg-white p-5 transition hover:shadow-md"
+              className="group rounded-xl border border-bosch-border bg-bosch-surface p-6 transition hover:-translate-y-1 hover:border-bosch-gold hover:shadow-[0_10px_30px_rgba(184,150,28,0.15)]"
             >
-              <p className="text-sm text-gray-500">{stat.label}</p>
-              <p className="mt-1 text-3xl font-bold">{stat.value}</p>
+              <p className="text-sm text-bosch-muted">{stat.label}</p>
+              <p className="mt-2 text-3xl font-extrabold text-white transition-colors group-hover:text-bosch-gold">
+                {stat.value}
+              </p>
             </Link>
           ))}
         </div>
@@ -112,44 +119,42 @@ export function Dashboard() {
 
       {/* Recent Orders */}
       <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-gray-700">
-            Recent Orders
-          </h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-white">Recent Orders</h2>
           <Link
             to="/orders"
-            className="text-sm text-indigo-600 hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-bosch-gold hover:text-bosch-gold-light"
           >
-            View all
+            View all <span aria-hidden="true">→</span>
           </Link>
         </div>
         {recentOrders.length === 0 ? (
-          <p className="text-gray-500">No orders yet.</p>
+          <p className="text-bosch-muted">No orders yet.</p>
         ) : (
-          <div className="overflow-x-auto rounded-lg border border-gray-200">
-            <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
-              <thead className="bg-gray-50">
+          <div className="overflow-x-auto rounded-xl border border-bosch-border">
+            <table className="min-w-full divide-y divide-bosch-border bg-bosch-surface text-sm">
+              <thead className="bg-bosch-ink-2">
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">
+                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wide text-bosch-gold text-xs">
                     Product
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">
+                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wide text-bosch-gold text-xs">
                     Qty
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">
+                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wide text-bosch-gold text-xs">
                     Total
                   </th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-500">
+                  <th className="px-4 py-3 text-left font-semibold uppercase tracking-wide text-bosch-gold text-xs">
                     Status
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-bosch-border">
                 {recentOrders.map((order) => (
-                  <tr key={order.id}>
-                    <td className="px-4 py-3">{order.productName}</td>
+                  <tr key={order.id} className="hover:bg-bosch-ink-2">
+                    <td className="px-4 py-3 text-white">{order.productName}</td>
                     <td className="px-4 py-3">{order.quantity}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 font-semibold text-white">
                       ${Number(order.totalPrice).toFixed(2)}
                     </td>
                     <td className="px-4 py-3">

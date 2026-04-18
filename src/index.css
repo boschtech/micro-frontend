@@ -1,1 +1,68 @@
 @import "tailwindcss";
+
+/* ============================================
+   BOSCH TECHNOLOGIES — Design System
+   (shared with bosch-technologies marketing site)
+   ============================================ */
+@theme {
+  /* Brand gold */
+  --color-bosch-gold: #b8961c;
+  --color-bosch-gold-dark: #96790f;
+  --color-bosch-gold-light: #d4b44a;
+  --color-bosch-gold-soft: #e8d48a;
+
+  /* Dark surfaces */
+  --color-bosch-ink: #000000;
+  --color-bosch-ink-2: #0a0a0a;
+  --color-bosch-surface: #111111;
+  --color-bosch-border: #1a1a1a;
+
+  /* Text */
+  --color-bosch-text: #cccccc;
+  --color-bosch-muted: #999999;
+
+  /* Typography */
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* --- Base --- */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bosch-ink);
+  color: var(--color-bosch-text);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.7;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+/* --- Native form controls in dark mode --- */
+input, textarea, select {
+  color-scheme: dark;
+}
+
+/* --- Custom scrollbar for dark theme --- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bosch-ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-bosch-border);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-bosch-gold-dark);
+}

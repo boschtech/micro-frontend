@@ -21,18 +21,29 @@ export function CreateOrder() {
 
   const selectedProduct = products?.find((p) => p.id === productId);
 
+  const inputClass =
+    "mt-1 block w-full rounded-md border-2 border-bosch-border bg-bosch-ink-2 px-3 py-2.5 text-sm text-white focus:border-bosch-gold focus:outline-none focus:ring-0";
+
   return (
     <div>
-      <Link to="/orders" className="text-sm text-indigo-600 hover:underline">
+      <Link
+        to="/orders"
+        className="text-sm font-semibold text-bosch-gold hover:text-bosch-gold-light"
+      >
         &larr; Back to Orders
       </Link>
 
-      <div className="mt-4 max-w-lg rounded-lg border border-gray-200 bg-white p-6">
-        <h1 className="mb-6 text-2xl font-bold">Create Order</h1>
+      <div className="mt-4 max-w-lg rounded-xl border border-bosch-border bg-bosch-surface p-8">
+        <h1 className="mb-6 text-3xl font-extrabold tracking-tight text-white">
+          Create Order
+        </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="order-product" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="order-product"
+              className="block text-sm font-semibold text-white"
+            >
               Product
             </label>
             <select
@@ -41,7 +52,7 @@ export function CreateOrder() {
               value={productId}
               onChange={(e) => setProductId(e.target.value)}
               disabled={productsLoading}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className={inputClass}
             >
               <option value="">Select a product…</option>
               {products
@@ -55,7 +66,10 @@ export function CreateOrder() {
           </div>
 
           <div>
-            <label htmlFor="order-quantity" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="order-quantity"
+              className="block text-sm font-semibold text-white"
+            >
               Quantity
             </label>
             <input
@@ -65,15 +79,15 @@ export function CreateOrder() {
               min="1"
               value={quantity}
               onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className={inputClass}
             />
           </div>
 
           {selectedProduct && (
-            <div className="rounded-md bg-gray-50 p-4 text-sm">
-              <p className="font-medium">{selectedProduct.name}</p>
-              <p className="text-gray-500">{selectedProduct.description}</p>
-              <p className="mt-2 font-semibold">
+            <div className="rounded-md border border-bosch-border bg-bosch-ink-2 p-4 text-sm">
+              <p className="font-semibold text-white">{selectedProduct.name}</p>
+              <p className="text-bosch-muted">{selectedProduct.description}</p>
+              <p className="mt-2 text-base font-semibold text-bosch-gold">
                 Estimated total: $
                 {(Number(selectedProduct.price) * quantity).toFixed(2)}
               </p>
@@ -81,7 +95,7 @@ export function CreateOrder() {
           )}
 
           {createOrder.error && (
-            <p className="text-sm text-red-600">
+            <p className="text-sm text-red-400">
               Failed to create order. Please try again.
             </p>
           )}
@@ -89,7 +103,7 @@ export function CreateOrder() {
           <button
             type="submit"
             disabled={createOrder.isPending || !productId}
-            className="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+            className="w-full rounded-md bg-bosch-gold px-4 py-3 text-sm font-semibold text-black transition-colors hover:bg-bosch-gold-dark disabled:opacity-50"
           >
             {createOrder.isPending ? "Placing Order…" : "Place Order"}
           </button>

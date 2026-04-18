@@ -18,13 +18,13 @@ describe("Navbar", () => {
   it("highlights active link for Dashboard at /", () => {
     renderWithProviders(<Navbar />, { initialEntries: ["/"] });
     const link = screen.getByText("Dashboard");
-    expect(link.className).toContain("text-indigo-600");
+    expect(link.className).toContain("text-bosch-gold");
   });
 
   it("highlights active link for Products at /products", () => {
     renderWithProviders(<Navbar />, { initialEntries: ["/products"] });
     const link = screen.getByText("Products");
-    expect(link.className).toContain("text-indigo-600");
+    expect(link.className).toContain("text-bosch-gold");
   });
 
   it("shows inactive style for non-active links", () => {
