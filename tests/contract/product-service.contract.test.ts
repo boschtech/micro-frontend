@@ -47,9 +47,7 @@ describe("Product Service Contract", () => {
       .addInteraction()
       .given("products exist")
       .uponReceiving("a request for all products")
-      .withRequest("GET", "/api/products", (builder) => {
-        builder.headers({ "Content-Type": "application/json" });
-      })
+      .withRequest("GET", "/api/products")
       .willRespondWith(200, (builder) => {
         builder.headers({ "Content-Type": "application/json" });
         builder.jsonBody(eachLike(PRODUCT_SHAPE));
@@ -71,9 +69,7 @@ describe("Product Service Contract", () => {
       .addInteraction()
       .given("product prod-001 exists")
       .uponReceiving("a request for product prod-001")
-      .withRequest("GET", "/api/products/prod-001", (builder) => {
-        builder.headers({ "Content-Type": "application/json" });
-      })
+      .withRequest("GET", "/api/products/prod-001")
       .willRespondWith(200, (builder) => {
         builder.headers({ "Content-Type": "application/json" });
         builder.jsonBody(PRODUCT_SHAPE);
@@ -166,9 +162,7 @@ describe("Product Service Contract", () => {
       .addInteraction()
       .given("product prod-001 exists")
       .uponReceiving("a request to delete product prod-001")
-      .withRequest("DELETE", "/api/products/prod-001", (builder) => {
-        builder.headers({ "Content-Type": "application/json" });
-      })
+      .withRequest("DELETE", "/api/products/prod-001")
       .willRespondWith(204)
       .executeTest(async (mockServer) => {
         pointToProvider(mockServer);
@@ -182,9 +176,7 @@ describe("Product Service Contract", () => {
       .addInteraction()
       .given("product prod-001 has orders")
       .uponReceiving("a request for orders of product prod-001")
-      .withRequest("GET", "/api/products/prod-001/orders", (builder) => {
-        builder.headers({ "Content-Type": "application/json" });
-      })
+      .withRequest("GET", "/api/products/prod-001/orders")
       .willRespondWith(200, (builder) => {
         builder.headers({ "Content-Type": "application/json" });
         builder.jsonBody({

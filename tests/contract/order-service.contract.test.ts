@@ -38,9 +38,7 @@ describe("Order Service Contract", () => {
       .addInteraction()
       .given("orders exist")
       .uponReceiving("a request for all orders")
-      .withRequest("GET", "/api/orders", (builder) => {
-        builder.headers({ "Content-Type": "application/json" });
-      })
+      .withRequest("GET", "/api/orders")
       .willRespondWith(200, (builder) => {
         builder.headers({ "Content-Type": "application/json" });
         builder.jsonBody(eachLike(ORDER_SHAPE));
@@ -64,9 +62,7 @@ describe("Order Service Contract", () => {
       .addInteraction()
       .given("order order-001 exists")
       .uponReceiving("a request for order order-001")
-      .withRequest("GET", "/api/orders/order-001", (builder) => {
-        builder.headers({ "Content-Type": "application/json" });
-      })
+      .withRequest("GET", "/api/orders/order-001")
       .willRespondWith(200, (builder) => {
         builder.headers({ "Content-Type": "application/json" });
         builder.jsonBody(ORDER_SHAPE);
@@ -115,9 +111,7 @@ describe("Order Service Contract", () => {
       .addInteraction()
       .given("orders exist for product prod-001")
       .uponReceiving("a request for orders of product prod-001")
-      .withRequest("GET", "/api/orders/product/prod-001", (builder) => {
-        builder.headers({ "Content-Type": "application/json" });
-      })
+      .withRequest("GET", "/api/orders/product/prod-001")
       .willRespondWith(200, (builder) => {
         builder.headers({ "Content-Type": "application/json" });
         builder.jsonBody(eachLike(ORDER_SHAPE));
