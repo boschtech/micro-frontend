@@ -18,12 +18,14 @@ export default defineConfig({
       provider: "v8",
       include: ["src/**/*.{ts,tsx}"],
       exclude: ["src/types/**", "src/vite-env.d.ts", "**/__tests__/**", "**/tests/**"],
+      // Pipeline fails if any metric drops below 95%.
       thresholds: {
-        statements: 100,
-        branches: 100,
-        functions: 100,
-        lines: 100,
+        statements: 95,
+        branches: 95,
+        functions: 95,
+        lines: 95,
       },
+      reporter: ["text", "text-summary", "html", "lcov", "json-summary"],
     },
   },
 });

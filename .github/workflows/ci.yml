@@ -124,11 +124,76 @@ jobs:
           path: pacts/
 
   # ────────────────────────────────────────────────────────────
+  # Stage 3c: Accessibility Tests (parallel with Component/Contract Tests)
+  #
+  # Runs axe-core against all top-level pages and shared components via
+  # Vitest + jsdom. Any accessibility violation fails this job and blocks
+  # the downstream `build` and `e2e-tests` jobs, breaking the pipeline.
+  # ────────────────────────────────────────────────────────────
+  a11y-tests:
+    name: Accessibility Tests
+    needs: unit-tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Accessibility Tests
+        run: npm run test:a11y
+
+  # ────────────────────────────────────────────────────────────
+  # Stage 3d: Code Coverage (parallel with other test stages)
+  #
+  # Runs the full Vitest suite with --coverage. Vitest enforces the 95%
+  # thresholds configured in `vitest.config.ts` (statements, branches,
+  # functions, lines); falling below any threshold fails this job and
+  # therefore the pipeline.
+  # ────────────────────────────────────────────────────────────
+  coverage:
+    name: Code Coverage (>= 95%)
+    needs: unit-tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Tests with Coverage
+        run: npm run test:coverage
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-full
+          path: coverage/
+          retention-days: 14
+
+  # ────────────────────────────────────────────────────────────
   # Stage 4: Build Verification
   # ────────────────────────────────────────────────────────────
   build:
     name: Build
-    needs: [component-tests, contract-tests]
+    needs: [component-tests, contract-tests, a11y-tests, coverage]
     runs-on: ubuntu-latest
 
     steps:
