@@ -19,8 +19,8 @@ describe("Dashboard – component test", () => {
     });
   });
 
-  it("shows service health status as DOWN when health check fails", async () => {
-    setupMockServer({ failHealth: true });
+  it("shows service health status as DOWN when API calls fail", async () => {
+    setupMockServer({ failProducts: true, failOrders: true });
 
     renderWithProviders(<App />, { initialEntries: ["/"] });
 

@@ -37,34 +37,20 @@ beforeEach(() => {
 });
 
 function setupMocks(opts?: {
-  healthUp?: boolean;
-  healthError?: boolean;
+  failProducts?: boolean;
+  failOrders?: boolean;
 }) {
-  const { healthUp = true, healthError = false } = opts ?? {};
+  const { failProducts = false, failOrders = false } = opts ?? {};
   vi.spyOn(globalThis, "fetch").mockImplementation(async (url) => {
     const urlStr = typeof url === "string" ? url : url.toString();
 
-    if (urlStr.includes("/actuator/health")) {
-      if (healthError) throw new Error("Connection refused");
-      return {
-        ok: true,
-        status: 200,
-        json: async () => ({ status: healthUp ? "UP" : "DOWN" }),
-      } as Response;
-    }
     if (urlStr.includes("/api/products")) {
-      return {
-        ok: true,
-        status: 200,
-        json: async () => mockProducts,
-      } as Response;
+      if (failProducts) return { ok: false, status: 500, text: async () => "error" } as Response;
+      return { ok: true, status: 200, json: async () => mockProducts } as Response;
     }
     if (urlStr.includes("/api/orders")) {
-      return {
-        ok: true,
-        status: 200,
-        json: async () => mockOrders,
-      } as Response;
+      if (failOrders) return { ok: false, status: 500, text: async () => "error" } as Response;
+      return { ok: true, status: 200, json: async () => mockOrders } as Response;
     }
     return { ok: true, status: 200, json: async () => [] } as Response;
   });
@@ -78,7 +64,7 @@ describe("Dashboard", () => {
   });
 
   it("shows Service Health section with UP status", async () => {
-    setupMocks({ healthUp: true });
+    setupMocks();
     renderWithProviders(<Dashboard />);
 
     await waitFor(() => {
@@ -92,8 +78,8 @@ describe("Dashboard", () => {
     });
   });
 
-  it("shows DOWN badge when health check fails", async () => {
-    setupMocks({ healthError: true });
+  it("shows DOWN badge when API calls fail", async () => {
+    setupMocks({ failProducts: true, failOrders: true });
     renderWithProviders(<Dashboard />);
 
     await waitFor(() => {
@@ -129,15 +115,7 @@ describe("Dashboard", () => {
   });
 
   it("shows 'No orders yet' when no orders", async () => {
-    vi.spyOn(globalThis, "fetch").mockImplementation(async (url) => {
-      const urlStr = typeof url === "string" ? url : url.toString();
-      if (urlStr.includes("/actuator/health")) {
-        return {
-          ok: true,
-          status: 200,
-          json: async () => ({ status: "UP" }),
-        } as Response;
-      }
+    vi.spyOn(globalThis, "fetch").mockImplementation(async () => {
       return {
         ok: true,
         status: 200,
@@ -168,28 +146,13 @@ describe("Dashboard", () => {
     expect(screen.getByText("Order Service")).toBeInTheDocument();
   });
 
-  it("shows DOWN when health response has no status field", async () => {
-    vi.spyOn(globalThis, "fetch").mockImplementation(async (url) => {
-      const urlStr = typeof url === "string" ? url : url.toString();
-      if (urlStr.includes("/actuator/health")) {
-        return {
-          ok: true,
-          status: 200,
-          json: async () => ({}),
-        } as Response;
-      }
-      return {
-        ok: true,
-        status: 200,
-        json: async () => [],
-      } as Response;
-    });
-
+  it("shows DOWN when only one service fails", async () => {
+    setupMocks({ failProducts: true });
     renderWithProviders(<Dashboard />);
 
     await waitFor(() => {
-      const badges = screen.getAllByText("DOWN");
-      expect(badges.length).toBeGreaterThan(0);
+      expect(screen.getAllByText("DOWN").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("UP").length).toBeGreaterThan(0);
     });
   });
 });

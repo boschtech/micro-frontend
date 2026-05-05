@@ -33,7 +33,7 @@ describe("a11y: Dashboard", () => {
   });
 
   it("renders the Dashboard page with no a11y violations (services DOWN)", async () => {
-    setupMockServer({ failHealth: true });
+    setupMockServer({ failProducts: true, failOrders: true });
     const { container } = renderWithProviders(<App />, { initialEntries: ["/"] });
 
     await waitFor(() => {

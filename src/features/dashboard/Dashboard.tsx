@@ -1,39 +1,34 @@
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
-import { productsApi } from "@/api/products";
-import { ordersApi } from "@/api/orders";
 import { useProducts } from "@/features/products/hooks/useProducts";
 import { useOrders } from "@/features/orders/hooks/useOrders";
 import { StatusBadge } from "@/shared/components/StatusBadge";
 
 export function Dashboard() {
-  const productHealth = useQuery({
-    queryKey: ["health", "products"],
-    queryFn: productsApi.health,
-    retry: false,
-  });
-  const orderHealth = useQuery({
-    queryKey: ["health", "orders"],
-    queryFn: ordersApi.health,
-    retry: false,
-  });
-  const { data: products } = useProducts();
-  const { data: orders } = useOrders();
+  const {
+    data: products,
+    isLoading: productsLoading,
+    isError: productsError,
+  } = useProducts();
+  const {
+    data: orders,
+    isLoading: ordersLoading,
+    isError: ordersError,
+  } = useOrders();
 
   const services = [
     {
       name: "Product Service",
       url: import.meta.env.VITE_PRODUCT_SERVICE_URL,
-      status: productHealth.data?.status,
-      loading: productHealth.isLoading,
-      error: productHealth.isError,
+      loading: productsLoading,
+      error: productsError,
+      up: !!products,
     },
     {
       name: "Order Service",
       url: import.meta.env.VITE_ORDER_SERVICE_URL,
-      status: orderHealth.data?.status,
-      loading: orderHealth.isLoading,
-      error: orderHealth.isError,
+      loading: ordersLoading,
+      error: ordersError,
+      up: !!orders,
     },
   ];
 
@@ -88,10 +83,8 @@ export function Dashboard() {
               </div>
               {svc.loading ? (
                 <span className="text-xs text-bosch-muted">Checking…</span>
-              ) : svc.error ? (
-                <StatusBadge value="DOWN" />
               ) : (
-                <StatusBadge value={svc.status ?? "DOWN"} />
+                <StatusBadge value={svc.error ? "DOWN" : svc.up ? "UP" : "DOWN"} />
               )}
             </div>
           ))}
