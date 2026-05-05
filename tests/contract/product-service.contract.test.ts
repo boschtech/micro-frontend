@@ -85,11 +85,13 @@ describe("Product Service Contract", () => {
   });
 
   it("POST /api/products – creates a new product", async () => {
+    // Keys are alphabetically sorted so JSON.stringify output matches
+    // the Pact Rust FFI's expected body serialization order.
     const body = {
-      name: "Widget Alpha",
-      description: "A premium widget for all your needs",
-      price: 29.99,
       category: "Widgets",
+      description: "A premium widget for all your needs",
+      name: "Widget Alpha",
+      price: 29.99,
     };
 
     await provider
@@ -99,10 +101,10 @@ describe("Product Service Contract", () => {
       .withRequest("POST", "/api/products", (builder) => {
         builder.headers({ "Content-Type": "application/json" });
         builder.jsonBody({
-          name: string(body.name),
-          description: string(body.description),
-          price: decimal(body.price),
           category: string(body.category),
+          description: string(body.description),
+          name: string(body.name),
+          price: decimal(body.price),
         });
       })
       .willRespondWith(201, (builder) => {
@@ -119,11 +121,13 @@ describe("Product Service Contract", () => {
   });
 
   it("PUT /api/products/:id – updates a product", async () => {
+    // Keys are alphabetically sorted so JSON.stringify output matches
+    // the Pact Rust FFI's expected body serialization order.
     const body = {
-      name: "Widget Alpha Pro",
-      description: "An upgraded premium widget",
-      price: 39.99,
       category: "Widgets",
+      description: "An upgraded premium widget",
+      name: "Widget Alpha Pro",
+      price: 39.99,
     };
 
     await provider
@@ -133,10 +137,10 @@ describe("Product Service Contract", () => {
       .withRequest("PUT", "/api/products/prod-001", (builder) => {
         builder.headers({ "Content-Type": "application/json" });
         builder.jsonBody({
-          name: string(body.name),
-          description: string(body.description),
-          price: decimal(body.price),
           category: string(body.category),
+          description: string(body.description),
+          name: string(body.name),
+          price: decimal(body.price),
         });
       })
       .willRespondWith(200, (builder) => {
