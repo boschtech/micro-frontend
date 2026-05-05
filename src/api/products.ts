@@ -33,7 +33,5 @@ export const productsApi = {
     apiFetch<ProductOrders>(`${base()}/${id}/orders`),
 
   health: () =>
-    apiFetch<HealthStatus>(
-      `${serviceUrl.products}/actuator/health`,
-    ),
+    apiFetch<HealthStatus>("/actuator/health/products"),
 };

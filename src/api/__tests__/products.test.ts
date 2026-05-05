@@ -127,14 +127,14 @@ describe("productsApi", () => {
     );
   });
 
-  it("health fetches /actuator/health", async () => {
+  it("health fetches /actuator/health/products", async () => {
     mockFetch({ status: "UP" });
 
     const result = await productsApi.health();
 
     expect(result).toEqual({ status: "UP" });
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      "/actuator/health",
+      "/actuator/health/products",
       expect.any(Object),
     );
   });

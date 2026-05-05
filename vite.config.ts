@@ -17,9 +17,19 @@ export default defineConfig({
         target: "https://product-service-ua20.onrender.com",
         changeOrigin: true,
       },
+      "/actuator/health/products": {
+        target: "https://product-service-ua20.onrender.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace("/actuator/health/products", "/actuator/health"),
+      },
       "/api/orders": {
         target: "https://order-service-7342.onrender.com",
         changeOrigin: true,
+      },
+      "/actuator/health/orders": {
+        target: "https://order-service-7342.onrender.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace("/actuator/health/orders", "/actuator/health"),
       },
     },
   },

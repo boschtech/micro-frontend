@@ -18,7 +18,5 @@ export const ordersApi = {
     apiFetch<Order[]>(`${base()}/product/${productId}`),
 
   health: () =>
-    apiFetch<HealthStatus>(
-      `${serviceUrl.orders}/actuator/health`,
-    ),
+    apiFetch<HealthStatus>("/actuator/health/orders"),
 };

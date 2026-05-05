@@ -90,7 +90,7 @@ export function setupMockServer(options?: MockServerOptions) {
     const method = init?.method ?? "GET";
 
     // ── Health ─────────────────────────────────────────────
-    if (url.endsWith("/actuator/health")) {
+    if (url.includes("/actuator/health")) {
       if (options?.failHealth) return jsonResponse("Service unavailable", 503);
       return jsonResponse({ status: healthStatus });
     }
