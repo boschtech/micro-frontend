@@ -13,6 +13,12 @@ services:
         value: public, max-age=0, must-revalidate
     routes:
       - type: rewrite
+        source: /actuator/health/products
+        destination: https://product-service-ua20.onrender.com/actuator/health
+      - type: rewrite
+        source: /actuator/health/orders
+        destination: https://order-service-7342.onrender.com/actuator/health
+      - type: rewrite
         source: /*
         destination: /index.html
     envVars:
