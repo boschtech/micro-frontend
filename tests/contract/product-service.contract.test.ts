@@ -45,7 +45,7 @@ function pointToProvider(mockServer: { url: string }) {
 // In CI, the Pact native mock server occasionally fails to bind its port
 // under resource contention. Retrying up to 2 times prevents transient
 // failures from breaking the pipeline.
-describe("Product Service Contract", { retry: process.env.CI ? 2 : 0 }, () => {
+describe("Product Service Contract", { retry: import.meta.env.CI ? 2 : 0 }, () => {
   it("GET /api/products – returns all products", async () => {
     await provider
       .addInteraction()
