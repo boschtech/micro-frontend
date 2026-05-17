@@ -1,4 +1,5 @@
 // @vitest-environment node
+// @vitest-sequential true
 import { describe, it, expect } from "vitest";
 import { PactV4, MatchersV3 } from "@pact-foundation/pact";
 import { productsApi } from "@/api/products";
@@ -41,7 +42,10 @@ function pointToProvider(mockServer: { url: string }) {
 
 // ── Contract tests ───────────────────────────────────────────
 
-describe("Product Service Contract", () => {
+// In CI, the Pact native mock server occasionally fails to bind its port
+// under resource contention. Retrying up to 2 times prevents transient
+// failures from breaking the pipeline.
+describe("Product Service Contract", { retry: process.env.CI ? 2 : 0 }, () => {
   it("GET /api/products – returns all products", async () => {
     await provider
       .addInteraction()
