@@ -63,7 +63,7 @@ describe("ordersApi", () => {
 
     expect(result).toEqual(order);
     expect(globalThis.fetch).toHaveBeenCalledWith("/api/orders", {
-      headers: { "Content-Type": "application/json" },
+      headers: expect.objectContaining({ "Content-Type": "application/json" }),
       method: "POST",
       body: JSON.stringify({ productId: "p1", quantity: 2 }),
     });

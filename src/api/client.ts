@@ -2,6 +2,8 @@ const PRODUCT_SERVICE =
   import.meta.env.VITE_PRODUCT_SERVICE_URL ?? "";
 const ORDER_SERVICE =
   import.meta.env.VITE_ORDER_SERVICE_URL ?? "";
+const API_KEY =
+  import.meta.env.VITE_API_KEY ?? "";
 
 export const serviceUrl = {
   products: PRODUCT_SERVICE,
@@ -20,12 +22,22 @@ class ApiError extends Error {
 
 export { ApiError };
 
+function buildHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (API_KEY) {
+    headers["X-API-Key"] = API_KEY;
+  }
+  return headers;
+}
+
 export async function apiFetch<T>(
   url: string,
   options?: RequestInit,
 ): Promise<T> {
   const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
+    headers: buildHeaders(),
     ...options,
   });
 

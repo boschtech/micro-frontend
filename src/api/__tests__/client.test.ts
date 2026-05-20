@@ -71,7 +71,7 @@ describe("apiFetch", () => {
     await apiFetch("/api/test");
 
     expect(globalThis.fetch).toHaveBeenCalledWith("/api/test", {
-      headers: { "Content-Type": "application/json" },
+      headers: expect.objectContaining({ "Content-Type": "application/json" }),
     });
   });
 
@@ -85,7 +85,7 @@ describe("apiFetch", () => {
     await apiFetch("/api/test", { method: "POST", body: '{"a":1}' });
 
     expect(globalThis.fetch).toHaveBeenCalledWith("/api/test", {
-      headers: { "Content-Type": "application/json" },
+      headers: expect.objectContaining({ "Content-Type": "application/json" }),
       method: "POST",
       body: '{"a":1}',
     });

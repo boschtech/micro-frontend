@@ -26,3 +26,5 @@ services:
         sync: false
       - key: VITE_ORDER_SERVICE_URL
         sync: false
+      - key: VITE_API_KEY
+        sync: false

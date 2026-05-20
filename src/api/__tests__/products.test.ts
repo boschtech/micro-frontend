@@ -72,7 +72,7 @@ describe("productsApi", () => {
 
     expect(result).toEqual(product);
     expect(globalThis.fetch).toHaveBeenCalledWith("/api/products", {
-      headers: { "Content-Type": "application/json" },
+      headers: expect.objectContaining({ "Content-Type": "application/json" }),
       method: "POST",
       body: JSON.stringify({
         name: "New",
@@ -96,7 +96,7 @@ describe("productsApi", () => {
 
     expect(result).toEqual(product);
     expect(globalThis.fetch).toHaveBeenCalledWith("/api/products/1", {
-      headers: { "Content-Type": "application/json" },
+      headers: expect.objectContaining({ "Content-Type": "application/json" }),
       method: "PUT",
       body: expect.any(String),
     });
@@ -109,7 +109,7 @@ describe("productsApi", () => {
 
     expect(result).toBeUndefined();
     expect(globalThis.fetch).toHaveBeenCalledWith("/api/products/1", {
-      headers: { "Content-Type": "application/json" },
+      headers: expect.objectContaining({ "Content-Type": "application/json" }),
       method: "DELETE",
     });
   });
