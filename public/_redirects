@@ -1,0 +1,6 @@
+# Health check proxies
+/actuator/health/products  https://product-service-ua20.onrender.com/actuator/health  200
+/actuator/health/orders    https://order-service-7342.onrender.com/actuator/health  200
+
+# SPA fallback — must be last
+/*  /index.html  200
