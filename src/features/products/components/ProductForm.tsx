@@ -13,6 +13,7 @@ export function ProductForm({ initialData, onSubmit, isSubmitting }: Props) {
     description: initialData?.description ?? "",
     price: initialData?.price ?? 0,
     category: initialData?.category ?? "",
+    inStock: initialData?.inStock ?? true,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -93,6 +94,29 @@ export function ProductForm({ initialData, onSubmit, isSubmitting }: Props) {
           onChange={(e) => update("price", parseFloat(e.target.value))}
           className={inputClass}
         />
+      </div>
+
+      <div>
+        <label
+          htmlFor="product-in-stock"
+          className="block text-sm font-semibold text-white"
+        >
+          Stock Status
+        </label>
+        <select
+          id="product-in-stock"
+          value={form.inStock ? "in-stock" : "out-of-stock"}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              inStock: e.target.value === "in-stock",
+            }))
+          }
+          className={inputClass}
+        >
+          <option value="in-stock">In Stock</option>
+          <option value="out-of-stock">Out of Stock</option>
+        </select>
       </div>
 
       <div className="flex items-end">

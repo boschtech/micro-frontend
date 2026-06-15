@@ -83,6 +83,31 @@ describe("productsApi", () => {
     });
   });
 
+  it("create forwards inStock when provided", async () => {
+    const product = { id: "1", name: "New", inStock: false };
+    mockFetch(product);
+
+    await productsApi.create({
+      name: "New",
+      description: "Desc",
+      price: 10,
+      category: "Cat",
+      inStock: false,
+    });
+
+    expect(globalThis.fetch).toHaveBeenCalledWith("/api/products", {
+      headers: expect.objectContaining({ "Content-Type": "application/json" }),
+      method: "POST",
+      body: JSON.stringify({
+        name: "New",
+        description: "Desc",
+        price: 10,
+        category: "Cat",
+        inStock: false,
+      }),
+    });
+  });
+
   it("update puts to /api/products/:id", async () => {
     const product = { id: "1", name: "Updated" };
     mockFetch(product);
