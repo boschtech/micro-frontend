@@ -158,4 +158,90 @@ describe("ProductList", () => {
 
     await user.click(screen.getAllByText("Delete")[0]!);
   });
+
+  it("filters products by name via the search bar", async () => {
+    const user = (await import("@testing-library/user-event")).default.setup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockProducts,
+    } as Response);
+
+    renderWithProviders(<ProductList />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Wireless Keyboard")).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByLabelText(/search products/i), "keyboard");
+
+    expect(screen.getByText("Wireless Keyboard")).toBeInTheDocument();
+    expect(screen.queryByText("USB Mouse")).not.toBeInTheDocument();
+  });
+
+  it("filters products by description via the search bar", async () => {
+    const user = (await import("@testing-library/user-event")).default.setup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockProducts,
+    } as Response);
+
+    renderWithProviders(<ProductList />);
+
+    await waitFor(() => {
+      expect(screen.getByText("USB Mouse")).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByLabelText(/search products/i), "ergonomic");
+
+    expect(screen.getByText("USB Mouse")).toBeInTheDocument();
+    expect(screen.queryByText("Wireless Keyboard")).not.toBeInTheDocument();
+  });
+
+  it("filters products by category case-insensitively", async () => {
+    const user = (await import("@testing-library/user-event")).default.setup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockProducts,
+    } as Response);
+
+    renderWithProviders(<ProductList />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Wireless Keyboard")).toBeInTheDocument();
+    });
+
+    await user.type(screen.getByLabelText(/search products/i), "ELECTRONICS");
+
+    expect(screen.getByText("Wireless Keyboard")).toBeInTheDocument();
+    expect(screen.getByText("USB Mouse")).toBeInTheDocument();
+  });
+
+  it("shows a no-match message when the search matches nothing", async () => {
+    const user = (await import("@testing-library/user-event")).default.setup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => mockProducts,
+    } as Response);
+
+    renderWithProviders(<ProductList />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Wireless Keyboard")).toBeInTheDocument();
+    });
+
+    await user.type(
+      screen.getByLabelText(/search products/i),
+      "nonexistent-xyz",
+    );
+
+    expect(
+      screen.getByText(/no products match your search/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Wireless Keyboard")).not.toBeInTheDocument();
+    expect(screen.queryByText("USB Mouse")).not.toBeInTheDocument();
+  });
 });
