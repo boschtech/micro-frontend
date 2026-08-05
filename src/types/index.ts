@@ -3,7 +3,8 @@
 export interface Product {
   id: string;
   name: string;
-  description: string;
+  // Nullable: the product service does not require a description.
+  description: string | null;
   price: number;
   category: string;
   inStock: boolean;

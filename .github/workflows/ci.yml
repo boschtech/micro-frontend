@@ -217,6 +217,26 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
+    # product-service and order-service are Spring Boot + JPA apps with
+    # `ddl-auto: update` and a PostgreSQL dialect, so they require a reachable
+    # database at startup. Without one they fail to build the
+    # EntityManagerFactory, never bind their port, and the pentest ends up
+    # scanning nothing.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
       - name: Checkout micro-frontend
         uses: actions/checkout@v5
@@ -269,21 +289,77 @@ jobs:
           mvn -f order-service/pom.xml package -DskipTests -B -q
           (cd micro-frontend && npm ci && VITE_PRODUCT_SERVICE_URL=http://localhost:8080 VITE_ORDER_SERVICE_URL=http://localhost:8081 npm run build)
 
-      - name: Start stack
+      # Each service owns its own schema, mirroring production.
+      - name: Create service databases
+        env:
+          PGHOST: localhost
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          if ! command -v psql > /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client
+          fi
+          for db in product_db order_db; do
+            psql -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = '$db'" \
+              | grep -q 1 || psql -d postgres -c "CREATE DATABASE $db"
+          done
+
+      # NOTE: product-service and order-service need *different* DATABASE_URLs,
+      # so the stack is started in separate steps rather than one shared `env:`
+      # block. Do NOT set RATE_LIMIT_RPM here: the pentest's rate-limit scan
+      # fires a 120-request burst and raises a finding unless it sees a 429,
+      # so this job must run against the default limit of 100/min.
+      - name: Start product-service
         env:
           CORS_ALLOWED_ORIGINS: http://localhost:3000
           ORDER_SERVICE_URL: http://localhost:8081
-          PRODUCT_SERVICE_URL: http://localhost:8080
+          DATABASE_URL: jdbc:postgresql://localhost:5432/product_db
+          DATABASE_USERNAME: postgres
+          DATABASE_PASSWORD: postgres
         run: |
           nohup java -jar product-service/target/*.jar > /tmp/product.log 2>&1 &
+
+      - name: Start order-service
+        env:
+          CORS_ALLOWED_ORIGINS: http://localhost:3000
+          PRODUCT_SERVICE_URL: http://localhost:8080
+          DATABASE_URL: jdbc:postgresql://localhost:5432/order_db
+          DATABASE_USERNAME: postgres
+          DATABASE_PASSWORD: postgres
+        run: |
           nohup java -jar order-service/target/*.jar > /tmp/order.log 2>&1 &
+
+      - name: Serve micro-frontend
+        run: |
           nohup npx --yes serve -s micro-frontend/dist -l 3000 > /tmp/frontend.log 2>&1 &
 
-      - name: Wait for services
+      - name: Wait for services to be healthy
         run: |
-          for url in http://localhost:8080/actuator/health http://localhost:8081/actuator/health http://localhost:3000; do
-            for i in $(seq 1 60); do curl -sf "$url" > /dev/null 2>&1 && break || sleep 2; done
-          done
+          wait_for() {
+            local url=$1
+            local log=$2
+            echo "Waiting for $url"
+            for i in $(seq 1 60); do
+              if curl -sf "$url" > /dev/null 2>&1; then
+                echo "✅ $url is up"
+                return 0
+              fi
+              sleep 2
+            done
+            echo "❌ Timed out waiting for $url"
+            # Surface why the process never became healthy instead of failing blind.
+            if [ -n "$log" ] && [ -f "$log" ]; then
+              echo "::group::$log (last 100 lines)"
+              tail -n 100 "$log"
+              echo "::endgroup::"
+            fi
+            return 1
+          }
+          wait_for http://localhost:8080/actuator/health /tmp/product.log
+          wait_for http://localhost:8081/actuator/health /tmp/order.log
+          wait_for http://localhost:3000 /tmp/frontend.log
 
       - name: Install pentest dependencies
         working-directory: security-pentest
@@ -315,6 +391,26 @@ jobs:
     name: E2E Tests (all)
     needs: build
     runs-on: ubuntu-latest
+
+    # product-service and order-service are Spring Boot + JPA apps with
+    # `ddl-auto: update` and a PostgreSQL dialect, so they require a reachable
+    # database at startup. Without one they fail to build the
+    # EntityManagerFactory, never bind their port, and the health check below
+    # times out.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       - name: Checkout micro-frontend
@@ -381,11 +477,35 @@ jobs:
           VITE_ORDER_SERVICE_URL: http://localhost:8081
         run: npm run build
 
+      # Each service owns its own schema, mirroring production.
+      - name: Create service databases
+        env:
+          PGHOST: localhost
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          if ! command -v psql > /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client
+          fi
+          for db in product_db order_db; do
+            psql -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = '$db'" \
+              | grep -q 1 || psql -d postgres -c "CREATE DATABASE $db"
+          done
+
+      # All Playwright workers share the runner's single outbound IP, so the
+      # default 100 req/min per-IP bucket in RateLimitFilter is exhausted by the
+      # suite itself and surfaces as 429s / "Failed to load products" flakes.
       - name: Start product-service
         working-directory: product-service
         env:
           CORS_ALLOWED_ORIGINS: http://localhost:3000
           ORDER_SERVICE_URL: http://localhost:8081
+          DATABASE_URL: jdbc:postgresql://localhost:5432/product_db
+          DATABASE_USERNAME: postgres
+          DATABASE_PASSWORD: postgres
+          RATE_LIMIT_RPM: '100000'
         run: |
           nohup java -jar target/*.jar > product-service.log 2>&1 &
           echo $! > /tmp/product-service.pid
@@ -395,6 +515,10 @@ jobs:
         env:
           CORS_ALLOWED_ORIGINS: http://localhost:3000
           PRODUCT_SERVICE_URL: http://localhost:8080
+          DATABASE_URL: jdbc:postgresql://localhost:5432/order_db
+          DATABASE_USERNAME: postgres
+          DATABASE_PASSWORD: postgres
+          RATE_LIMIT_RPM: '100000'
         run: |
           nohup java -jar target/*.jar > order-service.log 2>&1 &
           echo $! > /tmp/order-service.pid
@@ -409,6 +533,7 @@ jobs:
         run: |
           wait_for() {
             local url=$1
+            local log=$2
             echo "Waiting for $url"
             for i in $(seq 1 60); do
               if curl -sf "$url" > /dev/null 2>&1; then
@@ -418,11 +543,17 @@ jobs:
               sleep 2
             done
             echo "❌ Timed out waiting for $url"
+            # Surface why the process never became healthy instead of failing blind.
+            if [ -n "$log" ] && [ -f "$log" ]; then
+              echo "::group::$log (last 100 lines)"
+              tail -n 100 "$log"
+              echo "::endgroup::"
+            fi
             return 1
           }
-          wait_for http://localhost:8080/actuator/health
-          wait_for http://localhost:8081/actuator/health
-          wait_for http://localhost:3000
+          wait_for http://localhost:8080/actuator/health product-service/product-service.log
+          wait_for http://localhost:8081/actuator/health order-service/order-service.log
+          wait_for http://localhost:3000 micro-frontend/micro-frontend.log
 
       # ── AI: Restore cross-run history and contracts from cache ──
       - name: Restore AI history/contracts cache

@@ -23,12 +23,14 @@ export function ProductList() {
   };
 
   const term = search.trim().toLowerCase();
-  const filteredProducts = products!.filter(
+  const matches = (value: string | null | undefined) =>
+    (value ?? "").toLowerCase().includes(term);
+  const filteredProducts = (products ?? []).filter(
     (product) =>
       term === "" ||
-      product.name.toLowerCase().includes(term) ||
-      product.description.toLowerCase().includes(term) ||
-      product.category.toLowerCase().includes(term),
+      matches(product.name) ||
+      matches(product.description) ||
+      matches(product.category),
   );
 
   return (
