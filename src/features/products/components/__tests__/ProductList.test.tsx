@@ -219,6 +219,39 @@ describe("ProductList", () => {
     expect(screen.getByText("USB Mouse")).toBeInTheDocument();
   });
 
+  it("searches without crashing when a product has a null description", async () => {
+    const user = (await import("@testing-library/user-event")).default.setup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => [
+        ...mockProducts,
+        {
+          id: "p3",
+          name: "Run Shorts",
+          description: null,
+          price: 50,
+          category: "Running Clothes",
+          inStock: false,
+        },
+      ],
+    } as Response);
+
+    renderWithProviders(<ProductList />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Run Shorts")).toBeInTheDocument();
+    });
+
+    // "keyboard" matches neither the name nor the null description of p3,
+    // so the filter must evaluate the null description safely.
+    await user.type(screen.getByLabelText(/search products/i), "keyboard");
+
+    expect(screen.getByText("Wireless Keyboard")).toBeInTheDocument();
+    expect(screen.queryByText("Run Shorts")).not.toBeInTheDocument();
+    expect(screen.queryByText("USB Mouse")).not.toBeInTheDocument();
+  });
+
   it("shows a no-match message when the search matches nothing", async () => {
     const user = (await import("@testing-library/user-event")).default.setup();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
